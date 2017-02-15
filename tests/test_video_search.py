@@ -1,7 +1,7 @@
 """Test video searching."""
 
-import unittest
-from selector_helper import Selector
+import unittest, os
+from youtube.selector_helper import Selector
 from youtube.search import YouTubeSearch
 
 """
@@ -12,11 +12,24 @@ Non-existent video: https://www.youtube.com/watch?v=PH34kMOjmQk
 
 
 class VideoSearchTestCase(unittest.TestCase):
+    SEARCH_PAGE_URL = 'file://' + os.path.abspath('./tests/resources/'
+                                                  'search_1.html')
+
     def setUp(self):
         pass
 
     def tearDown(self):
         pass
+
+    def _mocked_query_youtube(self):
+        return self._ys_driver
+
+    def _mock_query_youtube(self, ys):
+        """Mocks the YouTubeSearch.query_youtube() method"""
+        ys.driver.get(self.SEARCH_PAGE_URL)
+        self._ys_driver = ys.driver
+        ys.query_youtube = self._mocked_query_youtube
+
 
     def test_video_found_on_first_page(self):
         video_id = 'WlRxNSRA7Rg'
@@ -25,6 +38,7 @@ class VideoSearchTestCase(unittest.TestCase):
 
         ys = YouTubeSearch(video_id=video_id, search_terms=search_terms,
                            max_page=max_page)
+        self._mock_query_youtube(ys)
         video_search_info = ys.search()
         self.assertIsNotNone(video_search_info)
 
@@ -38,6 +52,8 @@ class VideoSearchTestCase(unittest.TestCase):
         self.assertEqual(video_search_info['search_term'], 'cute cats')
         self.assertEqual(video_search_info['video_element'], expected_elem)
 
+        ys.close_driver()
+
     def test_video_found_on_third_page(self):
         video_id = 'tDkmhZIQ9jo'
         search_terms = ['cute cats']  # not used in this test
@@ -45,6 +61,7 @@ class VideoSearchTestCase(unittest.TestCase):
 
         ys = YouTubeSearch(video_id=video_id, search_terms=search_terms,
                            max_page=max_page)
+        self._mock_query_youtube(ys)
         video_search_info = ys.search()
         self.assertIsNotNone(video_search_info)
 
@@ -57,6 +74,7 @@ class VideoSearchTestCase(unittest.TestCase):
         self.assertEqual(video_search_info['page'], 3)
         self.assertEqual(video_search_info['search_term'], 'cute cats')
         self.assertEqual(video_search_info['video_element'], expected_elem)
+        ys.close_driver()
 
     def test_video_not_found(self):
         video_id = 'PH34kMOjmQk'
@@ -65,6 +83,8 @@ class VideoSearchTestCase(unittest.TestCase):
 
         ys = YouTubeSearch(video_id=video_id, search_terms=search_terms,
                            max_page=max_page)
+        self._mock_query_youtube(ys)
         video_search_info = ys.search()
         # if the video is not found, None is returned
         self.assertIsNone(video_search_info)
+        ys.close_driver()
