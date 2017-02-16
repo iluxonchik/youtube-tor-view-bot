@@ -3,6 +3,7 @@
 import unittest, os
 from youtube.selector_helper import Selector
 from youtube.search import YouTubeSearch
+from youtube.utils import wait_until_page_is_ready
 
 """
 Page 1 video: https://www.youtube.com/watch?v=WlRxNSRA7Rg
@@ -87,4 +88,67 @@ class VideoSearchTestCase(unittest.TestCase):
         video_search_info = ys.search()
         # if the video is not found, None is returned
         self.assertIsNone(video_search_info)
+        ys.close_driver()
+
+    def test_query_youtube_search_success(self):
+        video_id = 'PH34kMOjmQk'
+        search_terms = ['cute cats']
+        max_page = 4
+
+        ys = YouTubeSearch(video_id=video_id, search_terms=search_terms,
+                           max_page=max_page)
+        driver = ys.query_youtube()
+        wait_until_page_is_ready(driver)
+
+        self.assertTrue('cute cats' in driver.title,
+        '"{}" not found in "{}". Current url is "{}"'.format('cute cats', driver.title, driver.current_url))
+
+        ys.close_driver()
+
+    def test_query_youtube_search_list_cycles_through(self):
+        video_id = 'PH34kMOjmQk'
+        term1 = 'cute cats'
+        term2 = 'more cute cats'
+        term3 = 'even more cute cats'
+        search_terms = [term1, term2, term3]
+        max_page = 4
+
+        ys = YouTubeSearch(video_id=video_id, search_terms=search_terms,
+                           max_page=max_page)
+        driver = ys.query_youtube()
+        wait_until_page_is_ready(driver)
+
+        self.assertTrue(term1 in driver.title,
+        '"{}" not found in "{}". Current url is "{}"'.format(term1,
+                                driver.title, driver.current_url))
+
+        driver = ys.query_youtube()
+        wait_until_page_is_ready(driver)
+
+        self.assertTrue(term2 in driver.title,
+        '"{}" not found in "{}". Current url is "{}"'.format(term2,
+                                driver.title, driver.current_url))
+
+        driver = ys.query_youtube()
+        wait_until_page_is_ready(driver)
+
+        self.assertTrue(term3 in driver.title,
+        '"{}" not found in "{}". Current url is "{}"'.format(term3,
+                                driver.title, driver.current_url))
+
+
+        driver = ys.query_youtube()
+        wait_until_page_is_ready(driver)
+
+        self.assertTrue(term1 in driver.title,
+        '"{}" not found in "{}". Current url is "{}"'.format(term1,
+                                driver.title, driver.current_url))
+
+        driver = ys.query_youtube()
+        wait_until_page_is_ready(driver)
+
+        self.assertTrue(term2 in driver.title,
+        '"{}" not found in "{}". Current url is "{}"'.format(term2,
+                                driver.title, driver.current_url))
+
         ys.close_driver()
