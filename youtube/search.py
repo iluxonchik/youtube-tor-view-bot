@@ -63,10 +63,20 @@ class YouTubeSearch(object):
             (self._curr_search_term_index + 1) % self.MAX_SEARCH_TERM_INDEX)
 
         self._driver.get(self._youtube_url)
+        wait_until_page_is_ready(self._driver)
         search_bar = self._driver.find_element_by_xpath(
                 Selector.get_xpath_search_bar_selector())
+
+        prev_url = self._driver.current_url
         search_bar.send_keys(search_term)
         search_bar.send_keys(Keys.RETURN)
+        # let's wait and make sure that the url has been changed
+        # i.e., that the Keys.RETURN event actually had time to be
+        # processed
+        WebDriverWait(self._driver, settings.WAIT_INTERVAL).until(
+                        self._url_changed(prev_url))
+        wait_until_page_is_ready(self._driver)
+        
         logging.info('Searched YouTube for "{}".'
                      'Now on the first page of '
                      'search results'.format(search_term))
@@ -137,3 +147,8 @@ class YouTubeSearch(object):
 
     def _create_webdriver(self):
         return webdriver.Firefox()
+
+    def _url_changed(self, curr_url):
+        def url_changed(driver):
+            return curr_url != driver.current_url
+        return url_changed
