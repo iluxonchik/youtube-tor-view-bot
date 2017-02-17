@@ -14,3 +14,11 @@ WAIT_INTERVAL = 10
 # managed by the stem library
 TOR_SOCKS_PORT = 1992
 TOR_CONFIG = None  # custom config or None (https://stem.torproject.org/api/process.html#stem.process.launch_tor_with_config)
+
+
+# Humanizer settings
+ENABLE_HUMANIZER = True
+H_MIN_SCROLLS = 1
+H_MAX_SCROLLS = 13
+H_MIN_SCROLL_INTERVAL = 0.7
+H_MAX_SCROLL_INTERVAL = 3

@@ -1,4 +1,5 @@
 """Utility functions."""
+
 import settings
 from selenium.common.exceptions import (NoSuchElementException,
                                         TimeoutException)

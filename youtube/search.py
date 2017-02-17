@@ -2,6 +2,8 @@
 
 import logging
 
+from random import randint
+
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (NoSuchElementException,
@@ -9,6 +11,7 @@ from selenium.common.exceptions import (NoSuchElementException,
 from selenium.webdriver.support.ui import WebDriverWait
 
 import settings
+from youtube.humanizer import human_send_keys, scroll_randmonly_on_page
 from youtube.selector_helper import Selector
 from youtube.utils import is_page_ready, wait_until_page_is_ready
 from youtube.decorators import page_ready
@@ -68,15 +71,21 @@ class YouTubeSearch(object):
                 Selector.get_xpath_search_bar_selector())
 
         prev_url = self._driver.current_url
-        search_bar.send_keys(search_term)
-        search_bar.send_keys(Keys.RETURN)
+
+        human_send_keys(search_bar, search_term)
+        human_send_keys(search_bar, Keys.RETURN)
         # let's wait and make sure that the url has been changed
         # i.e., that the Keys.RETURN event actually had time to be
         # processed
         WebDriverWait(self._driver, settings.WAIT_INTERVAL).until(
                         self._url_changed(prev_url))
         wait_until_page_is_ready(self._driver)
-        
+
+        if settings.ENABLE_HUMANIZER:
+            num_scrolls = randint(settings.H_MIN_SCROLLS,
+                                  settings.H_MAX_SCROLLS)
+            scroll_randmonly_on_page(self._driver, num_scrolls=num_scrolls)
+
         logging.info('Searched YouTube for "{}".'
                      'Now on the first page of '
                      'search results'.format(search_term))

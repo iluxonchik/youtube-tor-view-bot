@@ -5,6 +5,8 @@ from youtube.selector_helper import Selector
 from youtube.search import YouTubeSearch
 from youtube.utils import wait_until_page_is_ready
 
+from time import sleep
+
 """
 Page 1 video: https://www.youtube.com/watch?v=WlRxNSRA7Rg
 Page 3 video: https://www.youtube.com/watch?v=tDkmhZIQ9jo
@@ -117,6 +119,7 @@ class VideoSearchTestCase(unittest.TestCase):
                            max_page=max_page)
         driver = ys.query_youtube()
         wait_until_page_is_ready(driver)
+        sleep(1)
 
         self.assertTrue(term1 in driver.title,
         '"{}" not found in "{}". Current url is "{}"'.format(term1,
@@ -124,6 +127,7 @@ class VideoSearchTestCase(unittest.TestCase):
 
         driver = ys.query_youtube()
         wait_until_page_is_ready(driver)
+        sleep(1)
 
         self.assertTrue(term2 in driver.title,
         '"{}" not found in "{}". Current url is "{}"'.format(term2,
@@ -131,6 +135,7 @@ class VideoSearchTestCase(unittest.TestCase):
 
         driver = ys.query_youtube()
         wait_until_page_is_ready(driver)
+        sleep(1)
 
         self.assertTrue(term3 in driver.title,
         '"{}" not found in "{}". Current url is "{}"'.format(term3,
@@ -139,6 +144,7 @@ class VideoSearchTestCase(unittest.TestCase):
 
         driver = ys.query_youtube()
         wait_until_page_is_ready(driver)
+        sleep(1)
 
         self.assertTrue(term1 in driver.title,
         '"{}" not found in "{}". Current url is "{}"'.format(term1,
@@ -146,6 +152,7 @@ class VideoSearchTestCase(unittest.TestCase):
 
         driver = ys.query_youtube()
         wait_until_page_is_ready(driver)
+        sleep(1)
 
         self.assertTrue(term2 in driver.title,
         '"{}" not found in "{}". Current url is "{}"'.format(term2,
